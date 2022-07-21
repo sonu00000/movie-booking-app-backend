@@ -7,12 +7,13 @@ const {
   updateMovie,
   deleteMovie,
 } = require("../controllers/movie.controller");
+const { isAdmin } = require("../middlewares/authjwt");
 
 router.route("/").post(createMovie).get(getMovies);
 router
   .route("/:movieId")
   .post(getSingleMovie)
-  .put(updateMovie)
+  .put([isAdmin], updateMovie)
   .delete(deleteMovie);
 
 module.exports = router;

@@ -10,13 +10,14 @@ const {
   getMoviesInSingleTheatre,
   getSingleMovieInSingleTheatre,
 } = require("../controllers/theatre.controller");
+const { isAdminOrTheatreOwner } = require("../middlewares/authjwt");
 const { validateTheatre } = require("../middlewares/validate.theatre");
 
 router.route("/").post([validateTheatre], createTheatre).get(getAlltheatres);
 router
   .route("/:theatreId")
   .get(getSingletheatre)
-  .put(updateTheatre)
+  .put([isAdminOrTheatreOwner], updateTheatre)
   .delete(deleteTheatre);
 
 //Add/Remove movies inside theatre

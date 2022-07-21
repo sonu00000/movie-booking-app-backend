@@ -10,4 +10,9 @@ module.exports = {
     released: "released",
     comingSoon: "coming soon",
   },
+  userTypes: {
+    admin: "admin",
+    customer: "customer",
+    theatreOwner: "theatreOwner",
+  },
 };

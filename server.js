@@ -2,6 +2,8 @@ const express = require("express");
 const { PORT } = require("./configs/server.config");
 const { DB_URL } = require("./configs/db.config");
 const mongoose = require("mongoose");
+const User = require("./models/user.model");
+const bcrypt = require("bcryptjs");
 const Movie = require("./models/movie.model");
 
 const app = express();
@@ -10,16 +12,43 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const authRouter = require("./routes/auth.routes");
+const userRouter = require("./routes/user.routes");
 const movieRouter = require("./routes/movie.routes");
 const theatreRouter = require("./routes/theatre.routes");
 
+app.use("/mba/api/v1/auth", authRouter);
+app.use("/mba/api/v1/users", userRouter);
 app.use("/mba/api/v1/movies", movieRouter);
 app.use("/mba/api/v1/theatres", theatreRouter);
+
+//create admin user if not any
+const init = async (req, res) => {
+  try {
+    const user = await User.findOne({ name: "admin" });
+
+    /** create admin user in system */
+    if (!user) {
+      const adminUser = await User.create({
+        name: "admin",
+        email: "admin@gmail.com",
+        password: bcrypt.hashSync("adminSecret", 8),
+        type: "admin",
+      });
+    }
+    return;
+  } catch (error) {
+    console.log(err);
+  }
+};
 
 const start = async () => {
   try {
     await mongoose.connect(DB_URL);
     console.log("Connected to mongodb");
+
+    //call the init method after you are able to connect to your db
+    init();
 
     /** create seed data */
     // create movies here
